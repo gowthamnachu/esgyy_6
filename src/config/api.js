@@ -1,8 +1,10 @@
 import axios from 'axios';
 import SERVER_CONFIG, { checkDatabaseConnection } from './server.js';
 
+const API_URL = process.env.REACT_APP_API_URL || `http://localhost:${SERVER_CONFIG.port}/api`;
+
 const api = axios.create({
-  baseURL: `http://localhost:${SERVER_CONFIG.port}/api`,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
   }
