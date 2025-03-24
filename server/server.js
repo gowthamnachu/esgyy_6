@@ -15,7 +15,7 @@ const app = express();
 // Update CORS configuration for Render
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.REACT_APP_API_URL
+    ? 'https://esgyy6-3fagm6ngc-gowthamnachus-projects.vercel.app'
     : 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
