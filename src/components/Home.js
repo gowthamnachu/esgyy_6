@@ -27,32 +27,10 @@ const float = keyframes`
   100% { transform: translateY(0px); }
 `;
 
-const heartFloat = keyframes`
-  0% { transform: translateY(0) scale(1) rotate(-10deg); }
-  50% { transform: translateY(-15px) scale(1.1) rotate(10deg); }
-  100% { transform: translateY(0) scale(1) rotate(-10deg); }
-`;
-
 const sparkle = keyframes`
   0% { opacity: 0; }
   50% { opacity: 1; }
   100% { opacity: 0; }
-`;
-
-const bounce = keyframes`
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-30px); }
-  60% { transform: translateY(-15px); }
-`;
-
-const rotate = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-const sparkleAnimation = keyframes`
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.2); }
 `;
 
 const floatWithRotate = keyframes`
@@ -83,13 +61,6 @@ const HeartIcon = styled(FavoriteIcon)({
   marginBottom: 20,
   animation: `${pulse} 1.5s infinite ease-in-out`,
   filter: "drop-shadow(0px 0px 10px rgba(255, 105, 180, 0.5))",
-});
-
-const TimerBox = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  gap: "15px",
-  marginTop: "30px",
 });
 
 const TimeUnit = styled(Box)({
@@ -138,98 +109,6 @@ const Celebration = styled(Box)(({ theme }) => ({
     background: 'url("data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M10 0l2.5 7.5H20l-6 4.5L16.5 20 10 15.5 3.5 20 6 12 0 7.5h7.5L10 0z" fill="rgba(255,255,255,0.2)"%3E%3C/path%3E%3C/svg%3E")',
     animation: `${sparkle} 2s linear infinite`
   }
-}));
-
-const FloatingHearts = styled(Box)({
-  position: 'absolute',
-  width: '100%',
-  height: '100%',
-  '& svg': {
-    position: 'absolute',
-    animation: `${heartFloat} 3s infinite`,
-    color: 'rgba(255, 255, 255, 0.3)',
-    '&:nth-of-type(2n)': {
-      animationDelay: '-0.5s',
-      animationDuration: '2.5s'
-    },
-    '&:nth-of-type(3n)': {
-      animationDelay: '-1s',
-      animationDuration: '3.5s'
-    }
-  }
-});
-
-const BirthdayMessage = styled(Typography)(({ theme }) => ({
-  color: '#fff',
-  textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
-  marginBottom: theme.spacing(2),
-  fontFamily: '"Dancing Script", cursive',
-  fontSize: '4rem',
-  textAlign: 'center',
-  animation: `${float} 3s infinite ease-in-out`,
-  background: 'linear-gradient(45deg, #FF69B4, #FFB6C1)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
-}));
-
-const Header = styled(Box)(({ show }) => ({
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  padding: '20px',
-  display: 'flex',
-  justifyContent: 'center', // Center the content
-  alignItems: 'center',
-  background: 'rgba(255, 255, 255, 0.9)',
-  boxShadow: '0 4px 30px rgba(255, 105, 180, 0.25)',
-  borderRadius: '0 0 20px 20px',
-  '&:hover': {
-    background: 'rgba(255, 255, 255, 0.95)',
-    boxShadow: '0 4px 30px rgba(255, 105, 180, 0.3)'
-  },
-  transition: 'all 0.3s ease'
-}));
-
-const floatAnimation = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
-  100% { transform: translateY(0px); }
-`;
-
-const WebsiteTitle = styled(Typography)(({ theme }) => ({
-  color: 'transparent',
-  background: 'linear-gradient(45deg, #ff4081 30%, #ff80ab 90%)',
-  backgroundClip: 'text',
-  WebkitBackgroundClip: 'text',
-  fontSize: '24px',
-  fontWeight: 'bold',
-  fontFamily: '"Dancing Script", cursive',
-  textShadow: '2px 2px 4px rgba(255, 105, 180, 0.2)',
-  '&:hover': {
-    transform: 'scale(1.05)',
-    background: 'linear-gradient(45deg, #ff1744 30%, #ff4081 90%)',
-    backgroundClip: 'text',
-    WebkitBackgroundClip: 'text'
-  },
-  transition: 'all 0.3s ease'
-}));
-
-const HeaderTimerBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  gap: '10px',
-  alignItems: 'center',
-  padding: '5px 10px',
-  borderRadius: '10px',
-  background: 'rgba(255, 255, 255, 0.5)',
-  backdropFilter: 'blur(5px)',
-  boxShadow: '0 4px 15px rgba(255, 105, 180, 0.1)',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 6px 20px rgba(255, 105, 180, 0.2)'
-  },
-  transition: 'all 0.3s ease'
 }));
 
 const FallingHeart = styled(Box)({
@@ -327,9 +206,62 @@ const BirthdayCelebration = ({ person }) => (
   </Celebration>
 );
 
+const Header = styled(Box)(({ show }) => ({
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  padding: '20px',
+  display: 'flex',
+  justifyContent: 'center', // Center the content
+  alignItems: 'center',
+  background: 'rgba(255, 255, 255, 0.9)',
+  boxShadow: '0 4px 30px rgba(255, 105, 180, 0.25)',
+  borderRadius: '0 0 20px 20px',
+  '&:hover': {
+    background: 'rgba(255, 255, 255, 0.95)',
+    boxShadow: '0 4px 30px rgba(255, 105, 180, 0.3)'
+  },
+  transition: 'all 0.3s ease'
+}));
+
+const WebsiteTitle = styled(Typography)(({ theme }) => ({
+  color: 'transparent',
+  background: 'linear-gradient(45deg, #ff4081 30%, #ff80ab 90%)',
+  backgroundClip: 'text',
+  WebkitBackgroundClip: 'text',
+  fontSize: '24px',
+  fontWeight: 'bold',
+  fontFamily: '"Dancing Script", cursive',
+  textShadow: '2px 2px 4px rgba(255, 105, 180, 0.2)',
+  '&:hover': {
+    transform: 'scale(1.05)',
+    background: 'linear-gradient(45deg, #ff1744 30%, #ff4081 90%)',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text'
+  },
+  transition: 'all 0.3s ease'
+}));
+
+const HeaderTimerBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  gap: '10px',
+  alignItems: 'center',
+  padding: '5px 10px',
+  borderRadius: '10px',
+  background: 'rgba(255, 255, 255, 0.5)',
+  backdropFilter: 'blur(5px)',
+  boxShadow: '0 4px 15px rgba(255, 105, 180, 0.1)',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(255, 105, 180, 0.2)'
+  },
+  transition: 'all 0.3s ease'
+}));
+
 const Home = () => {
   const [timeElapsed, setTimeElapsed] = useState({});
-  const [background, setBackground] = useState({ backgroundType: 'preset', backgroundValue: 'background1.jpg' });
+  // Remove unused background state
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [backgrounds, setBackgrounds] = useState([]);
@@ -512,8 +444,12 @@ const Home = () => {
   const username = localStorage.getItem("user");
 
   const handleBackgroundChange = useCallback((newBackground) => {
-    setBackground(newBackground);
-  }, []);
+    // Update the background changing logic to work with currentSlideIndex
+    const newIndex = backgrounds.findIndex(bg => bg.url === newBackground.backgroundValue);
+    if (newIndex !== -1) {
+      setCurrentSlideIndex(newIndex);
+    }
+  }, [backgrounds]);
 
   // Update background image selection
   const currentBackground = backgrounds[currentSlideIndex];
