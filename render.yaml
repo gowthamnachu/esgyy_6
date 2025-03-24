@@ -2,7 +2,11 @@ services:
   - type: web
     name: esgyy
     env: node
-    buildCommand: npm install && npm run build && cd server && npm install
+    buildCommand: |
+      npm install -g react-scripts
+      npm install
+      npm run build
+      cd server && npm install
     startCommand: node server/server.js
     envVars:
       - key: NODE_ENV
