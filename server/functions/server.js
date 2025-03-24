@@ -2,18 +2,27 @@ const express = require('express');
 const serverless = require('serverless-http');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const multer = require('multer');
 
 const app = express();
 
-// CORS and JSON middleware
-app.use(cors());
+// CORS configuration
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// Ensure MongoDB connects only once
+let cachedDb = null;
+async function connectToDatabase() {
+  if (cachedDb) {
+    return cachedDb;
+  }
+  await mongoose.connect(process.env.MONGODB_URI);
+  cachedDb = mongoose.connection;
+  return cachedDb;
+}
 
 // Schemas
 const Background = mongoose.model('Background', {
@@ -38,29 +47,34 @@ const Memory = mongoose.model('Memory', {
   createdAt: { type: Date, default: Date.now }
 });
 
-// Basic routes without file handling
-app.get('/api/backgrounds', async (req, res) => {
+// Routes without /api prefix
+app.get('/.netlify/functions/server/api/backgrounds', async (req, res) => {
   try {
+    await connectToDatabase();
     const backgrounds = await Background.find().sort({ createdAt: -1 });
-    res.json(backgrounds);
+    return res.json(backgrounds);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error:', error);
+    return res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/api/messages', async (req, res) => {
+app.get('/.netlify/functions/server/api/messages', async (req, res) => {
   try {
+    await connectToDatabase();
     const messages = await Message.find().sort({ createdAt: -1 });
-    res.json(messages);
+    return res.json(messages);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error:', error);
+    return res.status(500).json({ error: error.message });
   }
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
+// Add more routes following the same pattern
+
+// Health check route
+app.get('/.netlify/functions/server/health', (req, res) => {
   res.json({ status: 'Server is running' });
 });
 
-module.exports = app;
 module.exports.handler = serverless(app);

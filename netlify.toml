@@ -6,17 +6,17 @@
 [build.environment]
   NODE_ENV = "production"
   REACT_APP_API_URL = "/.netlify/functions/server/api"
-  NODE_VERSION = "18"
-  NPM_VERSION = "9"
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["express", "mongoose"]
+  included_files = ["server/functions/**/*"]
 
 [[redirects]]
-  from = "/api/*"
+  from = "/.netlify/functions/server/api/*"
   to = "/.netlify/functions/server/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
