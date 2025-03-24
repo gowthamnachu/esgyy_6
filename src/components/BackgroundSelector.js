@@ -39,14 +39,16 @@ const BackgroundSelector = ({ onBackgroundChange }) => {
         },
         body: JSON.stringify({
           backgroundType: 'preset',
-          backgroundValue: backgroundValue
+          backgroundValue: backgroundValue.toString()
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        onBackgroundChange && onBackgroundChange(data);
-        window.location.reload(); // Force refresh to update background
+        onBackgroundChange && onBackgroundChange({
+          backgroundType: 'preset',
+          backgroundValue: backgroundValue
+        });
       }
     } catch (error) {
       console.error('Error updating background:', error);
@@ -60,8 +62,8 @@ const BackgroundSelector = ({ onBackgroundChange }) => {
 
     const formData = new FormData();
     formData.append('backgroundImage', file);
-
     formData.append('backgroundType', 'custom');
+    formData.append('backgroundValue', file.name);
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/background`, {
@@ -71,7 +73,10 @@ const BackgroundSelector = ({ onBackgroundChange }) => {
 
       if (response.ok) {
         const data = await response.json();
-        onBackgroundChange(data);
+        onBackgroundChange && onBackgroundChange({
+          backgroundType: 'custom',
+          backgroundValue: `${process.env.REACT_APP_API_URL}/uploads/${data.backgroundValue}`
+        });
       }
     } catch (error) {
       console.error('Error uploading background:', error);
