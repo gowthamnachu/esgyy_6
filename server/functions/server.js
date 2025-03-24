@@ -51,7 +51,7 @@ const Memory = mongoose.model('Memory', {
 });
 
 // Background Routes
-app.get('/.netlify/functions/server/api/background', async (req, res) => {
+app.get('/api/background', async (req, res) => {
   try {
     await connectToDatabase();
     const background = await Background.findOne().sort({ createdAt: -1 });
@@ -62,7 +62,7 @@ app.get('/.netlify/functions/server/api/background', async (req, res) => {
   }
 });
 
-app.post('/.netlify/functions/server/api/background', upload.single('backgroundImage'), async (req, res) => {
+app.post('/api/background', upload.single('backgroundImage'), async (req, res) => {
   try {
     await connectToDatabase();
     const { backgroundType, backgroundValue } = req.body;
@@ -78,7 +78,7 @@ app.post('/.netlify/functions/server/api/background', upload.single('backgroundI
 });
 
 // Message Routes
-app.get('/.netlify/functions/server/api/messages', async (req, res) => {
+app.get('/api/messages', async (req, res) => {
   try {
     await connectToDatabase();
     const messages = await Message.find().sort({ createdAt: -1 });
@@ -88,7 +88,7 @@ app.get('/.netlify/functions/server/api/messages', async (req, res) => {
   }
 });
 
-app.post('/.netlify/functions/server/api/messages', async (req, res) => {
+app.post('/api/messages', async (req, res) => {
   try {
     await connectToDatabase();
     const { sender, content } = req.body;
@@ -101,7 +101,7 @@ app.post('/.netlify/functions/server/api/messages', async (req, res) => {
 });
 
 // Memory Routes
-app.get('/.netlify/functions/server/api/memories', async (req, res) => {
+app.get('/api/memories', async (req, res) => {
   try {
     await connectToDatabase();
     const memories = await Memory.find().sort({ date: -1 });
@@ -111,7 +111,7 @@ app.get('/.netlify/functions/server/api/memories', async (req, res) => {
   }
 });
 
-app.post('/.netlify/functions/server/api/memories', upload.array('images'), async (req, res) => {
+app.post('/api/memories', upload.array('images'), async (req, res) => {
   try {
     await connectToDatabase();
     const { title, description, date, sender } = req.body;
