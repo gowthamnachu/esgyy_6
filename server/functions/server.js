@@ -5,9 +5,14 @@ const cors = require('cors');
 const multer = require('multer');
 
 const app = express();
+const router = express.Router();
 
 // CORS and middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Configure multer for serverless
@@ -28,6 +33,12 @@ async function connectToDatabase() {
     throw err;
   }
 }
+
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 // Schemas
 const Background = mongoose.model('Background', {
@@ -52,20 +63,20 @@ const Memory = mongoose.model('Memory', {
   createdAt: { type: Date, default: Date.now }
 });
 
-// Background Routes
-app.get('/background', async (req, res) => {
+// Background Routes - removed /api prefix
+router.get('/background', async (req, res) => {
   try {
     await connectToDatabase();
     const background = await Background.findOne().sort({ createdAt: -1 });
     console.log('Background found:', background);
     return res.json(background || { backgroundType: 'preset', backgroundValue: 'background1.jpg' });
   } catch (error) {
-    console.error('Error fetching background:', error);
+    console.error('Error:', error);
     return res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/background', upload.single('backgroundImage'), async (req, res) => {
+router.post('/background', upload.single('backgroundImage'), async (req, res) => {
   try {
     await connectToDatabase();
     const { backgroundType, backgroundValue } = req.body;
@@ -81,7 +92,7 @@ app.post('/background', upload.single('backgroundImage'), async (req, res) => {
 });
 
 // Message Routes
-app.get('/messages', async (req, res) => {
+router.get('/messages', async (req, res) => {
   try {
     await connectToDatabase();
     const messages = await Message.find().sort({ createdAt: -1 });
@@ -91,7 +102,7 @@ app.get('/messages', async (req, res) => {
   }
 });
 
-app.post('/messages', async (req, res) => {
+router.post('/messages', async (req, res) => {
   try {
     await connectToDatabase();
     const { sender, content } = req.body;
@@ -104,7 +115,7 @@ app.post('/messages', async (req, res) => {
 });
 
 // Memory Routes
-app.get('/memories', async (req, res) => {
+router.get('/memories', async (req, res) => {
   try {
     await connectToDatabase();
     const memories = await Memory.find().sort({ date: -1 });
@@ -114,7 +125,7 @@ app.get('/memories', async (req, res) => {
   }
 });
 
-app.post('/memories', upload.array('images'), async (req, res) => {
+router.post('/memories', upload.array('images'), async (req, res) => {
   try {
     await connectToDatabase();
     const { title, description, date, sender } = req.body;
@@ -132,12 +143,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'Server is running' });
 });
 
-// Add debug route
-app.get('/debug', (req, res) => {
+app.use('/.netlify/functions/server', router);
+
+// Debug route
+app.get('/.netlify/functions/server/debug', (req, res) => {
   res.json({ 
     message: 'Debug endpoint working',
     env: process.env.NODE_ENV,
-    mongodb: process.env.MONGODB_URI ? 'configured' : 'not configured'
+    mongodb: process.env.MONGODB_URI ? 'configured' : 'not configured',
+    path: req.path
   });
 });
 

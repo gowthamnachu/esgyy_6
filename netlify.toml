@@ -6,14 +6,28 @@
 [build.environment]
   NODE_ENV = "production"
   REACT_APP_API_URL = "/.netlify/functions/server"
+  MONGODB_URI = "mongodb+srv://gowthamnachu545:gowtham123@esgyy.baheh.mongodb.net/loveapp"
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["express", "mongoose"]
+  included_files = ["server/functions/**/*"]
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/server"
+  from = "/api/background"
+  to = "/.netlify/functions/server/background"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/messages"
+  to = "/.netlify/functions/server/messages"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/memories"
+  to = "/.netlify/functions/server/memories"
   status = 200
   force = true
 
