@@ -1,65 +1,59 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login.js';
 import Home from './components/Home.js';
-import Header from './components/Header.js';
-import Messages from './components/Messages.js';
-import Memories from './components/Memories.js';
-import Background from './components/Background.js';
+import BackgroundPage from './components/BackgroundPage.js';
+import MessagesPage from './components/MessagesPage.js';
+import MemoriesPage from './components/MemoriesPage.js';
 import './App.css';
 
+const PrivateRoute = ({ children }) => {
+  const user = localStorage.getItem('user');
+  const validCredentials = {
+    'gow': 'loveher',
+    'snig': 'lovehim'
+  };
+  
+  // Check if user exists in valid credentials list
+  const isValidUser = user && Object.keys(validCredentials).includes(user);
+  return isValidUser ? children : <Navigate to="/" />;
+};
+
 function App() {
-  const [showMessages, setShowMessages] = useState(false);
-  const [showMemories, setShowMemories] = useState(false);
-  const [showBackground, setShowBackground] = useState(false);
-
-  const handleMessagesClick = () => {
-    setShowMessages(true);
-    setShowMemories(false);
-    setShowBackground(false);
-  };
-
-  const handleMemoriesClick = () => {
-    setShowMessages(false);
-    setShowMemories(true);
-    setShowBackground(false);
-  };
-
-  const handleBackgroundClick = () => {
-    setShowMessages(false);
-    setShowMemories(false);
-    setShowBackground(true);
-  };
-
-  const ProtectedRoute = ({ children }) => {
-    const user = localStorage.getItem('user');
-    if (!user) return <Navigate to="/login" />;
-    return (
-      <>
-        <Header
-          onMessagesClick={handleMessagesClick}
-          onMemoriesClick={handleMemoriesClick}
-          onBackgroundClick={handleBackgroundClick}
-        />
-        {showMessages && <Messages />}
-        {showMemories && <Memories />}
-        {showBackground && <Background />}
-        {!showMessages && !showMemories && !showBackground && children}
-      </>
-    );
-  };
-
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route
           path="/home"
           element={
-            <ProtectedRoute>
+            <PrivateRoute>
               <Home />
-            </ProtectedRoute>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/background"
+          element={
+            <PrivateRoute>
+              <BackgroundPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/messages"
+          element={
+            <PrivateRoute>
+              <MessagesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/memories"
+          element={
+            <PrivateRoute>
+              <MemoriesPage />
+            </PrivateRoute>
           }
         />
       </Routes>
