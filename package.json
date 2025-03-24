@@ -35,10 +35,10 @@
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
     "start:frontend": "react-scripts start",
     "start:backend": "node server/server.js",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "render-build": "npm run build"
+    "render-build": "CI=false npm install && CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [
