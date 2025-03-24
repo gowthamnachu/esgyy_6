@@ -2,6 +2,7 @@ const express = require('express');
 const serverless = require('serverless-http');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const multer = require('multer');
 
 const app = express();
 
@@ -13,12 +14,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Ensure MongoDB connects only once
+// Configure multer for serverless
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// MongoDB connection
 let cachedDb = null;
 async function connectToDatabase() {
-  if (cachedDb) {
-    return cachedDb;
-  }
+  if (cachedDb) return cachedDb;
   await mongoose.connect(process.env.MONGODB_URI);
   cachedDb = mongoose.connection;
   return cachedDb;
@@ -47,30 +50,79 @@ const Memory = mongoose.model('Memory', {
   createdAt: { type: Date, default: Date.now }
 });
 
-// Routes without /api prefix
-app.get('/.netlify/functions/server/api/backgrounds', async (req, res) => {
+// Background Routes
+app.get('/.netlify/functions/server/api/background', async (req, res) => {
   try {
     await connectToDatabase();
-    const backgrounds = await Background.find().sort({ createdAt: -1 });
-    return res.json(backgrounds);
+    const background = await Background.findOne().sort({ createdAt: -1 });
+    return res.json(background || { backgroundType: 'preset', backgroundValue: 'background1.jpg' });
   } catch (error) {
     console.error('Error:', error);
     return res.status(500).json({ error: error.message });
   }
 });
 
+app.post('/.netlify/functions/server/api/background', upload.single('backgroundImage'), async (req, res) => {
+  try {
+    await connectToDatabase();
+    const { backgroundType, backgroundValue } = req.body;
+    const background = new Background({
+      backgroundType,
+      backgroundValue: req.file ? req.file.filename : backgroundValue
+    });
+    await background.save();
+    return res.json(background);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Message Routes
 app.get('/.netlify/functions/server/api/messages', async (req, res) => {
   try {
     await connectToDatabase();
     const messages = await Message.find().sort({ createdAt: -1 });
     return res.json(messages);
   } catch (error) {
-    console.error('Error:', error);
     return res.status(500).json({ error: error.message });
   }
 });
 
-// Add more routes following the same pattern
+app.post('/.netlify/functions/server/api/messages', async (req, res) => {
+  try {
+    await connectToDatabase();
+    const { sender, content } = req.body;
+    const message = new Message({ sender, content });
+    await message.save();
+    return res.json(message);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Memory Routes
+app.get('/.netlify/functions/server/api/memories', async (req, res) => {
+  try {
+    await connectToDatabase();
+    const memories = await Memory.find().sort({ date: -1 });
+    return res.json(memories);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/.netlify/functions/server/api/memories', upload.array('images'), async (req, res) => {
+  try {
+    await connectToDatabase();
+    const { title, description, date, sender } = req.body;
+    const images = req.files ? req.files.map(file => file.filename) : [];
+    const memory = new Memory({ title, description, date, sender, images });
+    await memory.save();
+    return res.json(memory);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
 
 // Health check route
 app.get('/.netlify/functions/server/health', (req, res) => {
