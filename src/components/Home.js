@@ -386,9 +386,45 @@ const Home = () => {
   const [gowBirthday, setGowBirthday] = useState({});
   const [snigBirthday, setSnigBirthday] = useState({});
   
+  const startDate = moment("2024-09-06 18:15:00"); // Move this here
+  
   const birthdays = {
     gow: { date: '2005-04-05', name: 'Gow' },
     snig: { date: '2006-03-24', name: 'Snig' }
+  };
+
+  const fetchBackgrounds = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/backgrounds');
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure we filter out any deleted backgrounds
+        const allBackgrounds = [
+          { id: 'preset1', type: 'preset', url: background1 },
+          { id: 'preset2', type: 'preset', url: background2 },
+          ...data.filter(bg => bg.backgroundValue).map(bg => ({
+            id: bg._id,
+            type: bg.backgroundType,
+            url: bg.backgroundType === 'custom' 
+              ? `http://localhost:5000/uploads/${bg.backgroundValue}`
+              : bg.backgroundValue
+          }))
+        ];
+        console.log('Updated backgrounds:', allBackgrounds);
+        setBackgrounds(allBackgrounds);
+        
+        // Reset slide index if current background was deleted
+        if (currentSlideIndex >= allBackgrounds.length) {
+          setCurrentSlideIndex(0);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching backgrounds:', error);
+      setBackgrounds([
+        { id: 'preset1', type: 'preset', url: background1 },
+        { id: 'preset2', type: 'preset', url: background2 }
+      ]);
+    }
   };
 
   useEffect(() => {
@@ -451,43 +487,6 @@ const Home = () => {
     window.addEventListener('backgroundsUpdated', handleBackgroundUpdate);
     return () => window.removeEventListener('backgroundsUpdated', handleBackgroundUpdate);
   }, [fetchBackgrounds]);
-
-  // Update fetchBackgrounds function
-  const fetchBackgrounds = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/backgrounds');
-      if (response.ok) {
-        const data = await response.json();
-        // Ensure we filter out any deleted backgrounds
-        const allBackgrounds = [
-          { id: 'preset1', type: 'preset', url: background1 },
-          { id: 'preset2', type: 'preset', url: background2 },
-          ...data.filter(bg => bg.backgroundValue).map(bg => ({
-            id: bg._id,
-            type: bg.backgroundType,
-            url: bg.backgroundType === 'custom' 
-              ? `http://localhost:5000/uploads/${bg.backgroundValue}`
-              : bg.backgroundValue
-          }))
-        ];
-        console.log('Updated backgrounds:', allBackgrounds);
-        setBackgrounds(allBackgrounds);
-        
-        // Reset slide index if current background was deleted
-        if (currentSlideIndex >= allBackgrounds.length) {
-          setCurrentSlideIndex(0);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching backgrounds:', error);
-      setBackgrounds([
-        { id: 'preset1', type: 'preset', url: background1 },
-        { id: 'preset2', type: 'preset', url: background2 }
-      ]);
-    }
-  };
-
-  const startDate = moment("2024-09-06 18:15:00");
 
   React.useEffect(() => {
     const handleMouseMove = (event) => {
