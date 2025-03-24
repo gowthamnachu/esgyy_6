@@ -12,9 +12,9 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
-// Update CORS configuration for Render
+// Update CORS configuration
 app.use(cors({
-  origin: ['https://esgyy.vercel.app', 'http://localhost:3000'],
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -22,9 +22,7 @@ app.use(cors({
 app.use(express.json());
 
 // Update file paths for Vercel
-const uploadDir = process.env.NODE_ENV === 'production' 
-  ? '/tmp'
-  : path.join(process.cwd(), 'uploads');
+const uploadDir = '/tmp';
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -264,7 +262,10 @@ app.get('/health', (req, res) => {
   res.json({ status: 'Server is running' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Remove app.listen for Vercel deployment
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
 
 export default app;

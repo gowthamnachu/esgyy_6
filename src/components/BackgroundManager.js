@@ -38,7 +38,8 @@ const BackgroundManager = () => {
 
   const fetchBackgrounds = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/backgrounds');
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/backgrounds`);
       if (response.ok) {
         const data = await response.json();
         const allBackgrounds = [
@@ -48,7 +49,7 @@ const BackgroundManager = () => {
             .map(bg => ({
               id: bg._id,
               type: 'custom',
-              url: `http://localhost:5000/uploads/${bg.backgroundValue}`
+              url: `${API_URL}/uploads/${bg.backgroundValue}`
             }))
         ];
         setBackgrounds(allBackgrounds);
@@ -68,7 +69,8 @@ const BackgroundManager = () => {
     formData.append('backgroundType', 'custom');
 
     try {
-      const response = await fetch('http://localhost:5000/api/background', {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/background`, {
         method: 'POST',
         body: formData
       });
@@ -85,7 +87,7 @@ const BackgroundManager = () => {
     if (backgroundId.startsWith('preset')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/background/${backgroundId}`, {
+      const response = await fetch(`${API_URL}/background/${backgroundId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

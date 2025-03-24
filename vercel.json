@@ -9,18 +9,19 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build"
+        "distDir": "build",
+        "buildCommand": "npm run build"
       }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       "headers": {
-        "Access-Control-Allow-Origin": "https://esgyy.vercel.app",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept",
-        "Access-Control-Allow-Credentials": "true"
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
       },
       "dest": "/server/server.js",
       "continue": true
@@ -30,15 +31,15 @@
       "dest": "/server/server.js"
     },
     {
-      "src": "/health",
-      "dest": "/server/server.js"
-    },
-    {
       "handle": "filesystem"
     },
     {
-      "src": "/.*",
+      "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://gowthamnachu545:gowtham123@esgyy.baheh.mongodb.net/loveapp",
+    "NODE_ENV": "production"
+  }
 }

@@ -160,7 +160,8 @@ const MessagesPage = () => {
 
   const fetchMessages = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/messages');
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/messages`);
       if (response.ok) {
         const data = await response.json();
         const hasNewMessages = data.some(msg => 
@@ -192,7 +193,8 @@ const MessagesPage = () => {
     if (!newMessage.trim()) return;
 
     try {
-      const response = await fetch('http://localhost:5000/api/messages', {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -214,7 +216,8 @@ const MessagesPage = () => {
 
   const handleDeleteMessage = async (messageId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/messages/${messageId}`, {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/messages/${messageId}`, {
         method: 'DELETE',
       });
 
@@ -228,7 +231,8 @@ const MessagesPage = () => {
 
   const handleMarkAsSeen = async (messageId) => {
     try {
-      await fetch(`http://localhost:5000/api/messages/seen/${messageId}`, {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      await fetch(`${API_URL}/messages/seen/${messageId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
