@@ -341,7 +341,7 @@ const Home = () => {
   const [gowBirthday, setGowBirthday] = useState({});
   const [snigBirthday, setSnigBirthday] = useState({});
   
-  const startDate = moment("2024-09-06 18:15:00"); // Move this here
+  const startDate = moment("2024-09-06 18:15:00");
   
   const birthdays = useMemo(() => ({
     gow: { date: '2005-04-05', name: 'Gow' },
@@ -353,7 +353,6 @@ const Home = () => {
       const response = await fetch('http://localhost:5000/api/backgrounds');
       if (response.ok) {
         const data = await response.json();
-        // Ensure we filter out any deleted backgrounds
         const allBackgrounds = [
           { id: 'preset1', type: 'preset', url: background1 },
           { id: 'preset2', type: 'preset', url: background2 },
@@ -365,10 +364,8 @@ const Home = () => {
               : bg.backgroundValue
           }))
         ];
-        console.log('Updated backgrounds:', allBackgrounds);
         setBackgrounds(allBackgrounds);
         
-        // Reset slide index if current background was deleted
         if (currentSlideIndex >= allBackgrounds.length) {
           setCurrentSlideIndex(0);
         }

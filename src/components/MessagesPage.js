@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, TextField, IconButton, Typography, Paper, Button, Snackbar, Alert } from '@mui/material';
 import { styled } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
@@ -158,15 +158,7 @@ const MessagesPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 3000);
-    return () => clearInterval(interval);
-  }, [fetchMessages]);
-
-  useEffect(scrollToBottom, [messages]);
-
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:5000/api/messages');
       if (response.ok) {
@@ -186,7 +178,15 @@ const MessagesPage = () => {
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
-  };
+  }, [username, lastCheckedTime]);
+
+  useEffect(() => {
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 3000);
+    return () => clearInterval(interval);
+  }, [fetchMessages]);
+
+  useEffect(scrollToBottom, [messages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
