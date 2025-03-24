@@ -142,7 +142,8 @@ const MemoriesPage = () => {
 
   const fetchMemories = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/memories');
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/memories`);
       if (response.ok) {
         const data = await response.json();
         setMemories(data);
@@ -168,7 +169,8 @@ const MemoriesPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/memories', {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/memories`, {
         method: 'POST',
         body: formData
       });
@@ -185,7 +187,8 @@ const MemoriesPage = () => {
 
   const handleDelete = async (memoryId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/memories/${memoryId}`, {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/memories/${memoryId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

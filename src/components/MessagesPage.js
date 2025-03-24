@@ -161,6 +161,8 @@ const MessagesPage = () => {
   const fetchMessages = useCallback(async () => {
     try {
       const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsURL = API_URL.replace(/^https?:\/\//, wsProtocol + '//');
       const response = await fetch(`${API_URL}/messages`);
       if (response.ok) {
         const data = await response.json();
