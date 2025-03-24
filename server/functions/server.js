@@ -6,12 +6,8 @@ const multer = require('multer');
 
 const app = express();
 
-// CORS configuration
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// CORS and middleware
+app.use(cors());
 app.use(express.json());
 
 // Configure multer for serverless
@@ -22,9 +18,15 @@ const upload = multer({ storage: storage });
 let cachedDb = null;
 async function connectToDatabase() {
   if (cachedDb) return cachedDb;
-  await mongoose.connect(process.env.MONGODB_URI);
-  cachedDb = mongoose.connection;
-  return cachedDb;
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    cachedDb = mongoose.connection;
+    console.log('MongoDB Connected');
+    return cachedDb;
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    throw err;
+  }
 }
 
 // Schemas
@@ -51,18 +53,19 @@ const Memory = mongoose.model('Memory', {
 });
 
 // Background Routes
-app.get('/api/background', async (req, res) => {
+app.get('/.netlify/functions/server/api/background', async (req, res) => {
   try {
     await connectToDatabase();
     const background = await Background.findOne().sort({ createdAt: -1 });
+    console.log('Background found:', background);
     return res.json(background || { backgroundType: 'preset', backgroundValue: 'background1.jpg' });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error fetching background:', error);
     return res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/api/background', upload.single('backgroundImage'), async (req, res) => {
+app.post('/.netlify/functions/server/api/background', upload.single('backgroundImage'), async (req, res) => {
   try {
     await connectToDatabase();
     const { backgroundType, backgroundValue } = req.body;
@@ -78,7 +81,7 @@ app.post('/api/background', upload.single('backgroundImage'), async (req, res) =
 });
 
 // Message Routes
-app.get('/api/messages', async (req, res) => {
+app.get('/.netlify/functions/server/api/messages', async (req, res) => {
   try {
     await connectToDatabase();
     const messages = await Message.find().sort({ createdAt: -1 });
@@ -88,7 +91,7 @@ app.get('/api/messages', async (req, res) => {
   }
 });
 
-app.post('/api/messages', async (req, res) => {
+app.post('/.netlify/functions/server/api/messages', async (req, res) => {
   try {
     await connectToDatabase();
     const { sender, content } = req.body;
@@ -101,7 +104,7 @@ app.post('/api/messages', async (req, res) => {
 });
 
 // Memory Routes
-app.get('/api/memories', async (req, res) => {
+app.get('/.netlify/functions/server/api/memories', async (req, res) => {
   try {
     await connectToDatabase();
     const memories = await Memory.find().sort({ date: -1 });
@@ -111,7 +114,7 @@ app.get('/api/memories', async (req, res) => {
   }
 });
 
-app.post('/api/memories', upload.array('images'), async (req, res) => {
+app.post('/.netlify/functions/server/api/memories', upload.array('images'), async (req, res) => {
   try {
     await connectToDatabase();
     const { title, description, date, sender } = req.body;
@@ -127,6 +130,15 @@ app.post('/api/memories', upload.array('images'), async (req, res) => {
 // Health check route
 app.get('/.netlify/functions/server/health', (req, res) => {
   res.json({ status: 'Server is running' });
+});
+
+// Add debug route
+app.get('/.netlify/functions/server/debug', (req, res) => {
+  res.json({ 
+    message: 'Debug endpoint working',
+    env: process.env.NODE_ENV,
+    mongodb: process.env.MONGODB_URI ? 'configured' : 'not configured'
+  });
 });
 
 module.exports.handler = serverless(app);
