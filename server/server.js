@@ -12,33 +12,20 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
-// Update CORS configuration for Render
 app.use(cors({
-  origin: ['https://esgyy.vercel.app', 'http://localhost:3000'],
+  origin: 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
-// Update file paths for Vercel
-const uploadDir = process.env.NODE_ENV === 'production' 
-  ? '/tmp'
-  : path.join(process.cwd(), 'uploads');
-
+const uploadDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 app.use('/uploads', express.static(uploadDir));
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build/index.html'));
-  });
-}
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://gowthamnachu545:gowtham123@esgyy.baheh.mongodb.net/loveapp';
