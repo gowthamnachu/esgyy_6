@@ -285,13 +285,14 @@ const Home = () => {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/backgrounds`);
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched backgrounds:', data); // Debug log
         const allBackgrounds = [
           { id: 'preset1', type: 'preset', url: background1 },
           { id: 'preset2', type: 'preset', url: background2 },
           ...data.map(bg => ({
             id: bg._id,
             type: bg.backgroundType,
-            url: bg.backgroundValue.data
+            url: bg.backgroundValue.data // Update to use the base64 data
           }))
         ];
         setBackgrounds(allBackgrounds);

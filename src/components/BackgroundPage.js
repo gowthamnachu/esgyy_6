@@ -59,18 +59,17 @@ const BackgroundPage = () => {
 
   const fetchBackgrounds = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/backgrounds');
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/backgrounds`);
       if (response.ok) {
         const data = await response.json();
         const allBackgrounds = [
           { id: 'preset1', type: 'preset', url: background1 },
           { id: 'preset2', type: 'preset', url: background2 },
-          ...data.filter(bg => bg.backgroundType === 'custom')
-            .map(bg => ({
-              id: bg._id,
-              type: 'custom',
-              url: `http://localhost:5000/uploads/${bg.backgroundValue}`
-            }))
+          ...data.map(bg => ({
+            id: bg._id,
+            type: bg.backgroundType,
+            url: bg.backgroundValue.data // Update to use the base64 data
+          }))
         ];
         setBackgrounds(allBackgrounds);
       }
@@ -164,7 +163,12 @@ const BackgroundPage = () => {
                 src={background.url}
                 alt="Background"
                 loading="lazy"
-                style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                style={{ 
+                  width: '100%', 
+                  height: '200px', 
+                  objectFit: 'cover', 
+                  borderRadius: '8px' 
+                }}
               />
               <ThumbnailActions className="actions">
                 {background.type !== 'preset' && (

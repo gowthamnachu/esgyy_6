@@ -84,6 +84,19 @@ app.get('/.netlify/functions/server/api/background', async (req, res) => {
   }
 });
 
+// Update backgrounds fetch route
+app.get('/.netlify/functions/server/api/backgrounds', async (req, res) => {
+  try {
+    await connectToDatabase();
+    const backgrounds = await Background.find().sort({ createdAt: -1 });
+    console.log('Fetched backgrounds:', backgrounds); // Debug log
+    return res.json(backgrounds);
+  } catch (error) {
+    console.error('Error fetching backgrounds:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // Update background upload route
 app.post('/.netlify/functions/server/api/background', upload.single('backgroundImage'), async (req, res) => {
   try {
