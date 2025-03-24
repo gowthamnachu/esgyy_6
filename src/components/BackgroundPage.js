@@ -84,17 +84,18 @@ const BackgroundPage = () => {
 
     const formData = new FormData();
     formData.append('backgroundImage', file);
-
     formData.append('backgroundType', 'custom');
 
     try {
-      const response = await fetch('http://localhost:5000/api/background', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/background`, {
         method: 'POST',
         body: formData
       });
 
       if (response.ok) {
-        fetchBackgrounds();
+        await fetchBackgrounds();
+        // Force background refresh in Home component
+        window.dispatchEvent(new CustomEvent('backgroundsUpdated'));
       }
     } catch (error) {
       console.error('Error uploading background:', error);
@@ -102,23 +103,17 @@ const BackgroundPage = () => {
   };
 
   const handleDelete = async (backgroundId) => {
+    if (backgroundId.startsWith('preset')) return;
+
     try {
-      const response = await fetch(`http://localhost:5000/api/background/${backgroundId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/background/${backgroundId}`, {
+        method: 'DELETE'
       });
 
       if (response.ok) {
-        // Update local state to remove deleted background
-        setBackgrounds(prevBackgrounds => 
-          prevBackgrounds.filter(bg => bg.id !== backgroundId)
-        );
-        
+        setBackgrounds(prev => prev.filter(bg => bg.id !== backgroundId));
         // Force background refresh in Home component
-        const event = new CustomEvent('backgroundsUpdated');
-        window.dispatchEvent(event);
+        window.dispatchEvent(new CustomEvent('backgroundsUpdated'));
       }
     } catch (error) {
       console.error('Error deleting background:', error);
@@ -163,6 +158,10 @@ const BackgroundPage = () => {
                 src={background.url}
                 alt="Background"
                 loading="lazy"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB...'; // Add fallback image
+                }}
                 style={{ 
                   width: '100%', 
                   height: '200px', 

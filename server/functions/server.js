@@ -84,7 +84,7 @@ app.get('/.netlify/functions/server/api/background', async (req, res) => {
   }
 });
 
-// Update backgrounds fetch route
+// Add backgrounds fetch route
 app.get('/.netlify/functions/server/api/backgrounds', async (req, res) => {
   try {
     await connectToDatabase();
@@ -105,14 +105,14 @@ app.post('/.netlify/functions/server/api/background', upload.single('backgroundI
     let backgroundValue;
 
     if (req.file) {
-      // For custom uploaded images, store as base64
+      // Convert image to base64
       const base64Data = req.file.buffer.toString('base64');
       backgroundValue = {
         data: `data:${req.file.mimetype};base64,${base64Data}`,
         contentType: req.file.mimetype
       };
     } else {
-      // For preset backgrounds, store the URL directly
+      // For preset backgrounds
       backgroundValue = {
         data: req.body.backgroundValue,
         contentType: 'image/jpeg'
@@ -125,9 +125,30 @@ app.post('/.netlify/functions/server/api/background', upload.single('backgroundI
     });
     
     await background.save();
-    return res.json(background);
+    return res.json({
+      _id: background._id,
+      backgroundType: background.backgroundType,
+      backgroundValue: background.backgroundValue
+    });
   } catch (error) {
     console.error('Error saving background:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Update background deletion route
+app.delete('/.netlify/functions/server/api/background/:backgroundId', async (req, res) => {
+  try {
+    await connectToDatabase();
+    const background = await Background.findById(req.params.backgroundId);
+    if (!background) {
+      return res.status(404).json({ error: 'Background not found' });
+    }
+
+    await Background.findByIdAndDelete(req.params.backgroundId);
+    return res.json({ message: 'Background deleted successfully', id: req.params.backgroundId });
+  } catch (error) {
+    console.error('Error deleting background:', error);
     return res.status(500).json({ error: error.message });
   }
 });
@@ -206,19 +227,6 @@ app.delete('/.netlify/functions/server/api/memories/:memoryId', async (req, res)
       return res.status(404).json({ error: 'Memory not found' });
     }
     return res.json({ message: 'Memory deleted successfully' });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
-app.delete('/.netlify/functions/server/api/background/:backgroundId', async (req, res) => {
-  try {
-    await connectToDatabase();
-    const background = await Background.findByIdAndDelete(req.params.backgroundId);
-    if (!background) {
-      return res.status(404).json({ error: 'Background not found' });
-    }
-    return res.json({ message: 'Background deleted successfully' });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
