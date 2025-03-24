@@ -140,19 +140,12 @@ const MemoriesPage = () => {
     fetchMemories();
   }, []);
 
-  const getImageUrl = (imagePath) => {
-    return `${process.env.REACT_APP_API_URL}/uploads/${imagePath}`;
-  };
-
   const fetchMemories = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/memories`);
       if (response.ok) {
         const data = await response.json();
-        setMemories(data.map(memory => ({
-          ...memory,
-          images: memory.images.map(img => getImageUrl(img))
-        })));
+        setMemories(data);
       }
     } catch (error) {
       console.error('Error fetching memories:', error);
@@ -240,7 +233,7 @@ const MemoriesPage = () => {
                 <StyledCardMedia>
                   <Box
                     component="img"
-                    src={memory.images[currentImageIndexes[memory._id] || 0]}
+                    src={`http://localhost:5000/uploads/${memory.images[currentImageIndexes[memory._id] || 0]}`}
                     alt={memory.title}
                     sx={{
                       width: '100%',

@@ -1,24 +1,19 @@
 [build]
-  base = "/"
-  command = "CI= npm run build"
+  command = "npm run build"
   publish = "build"
   functions = "server/functions"
 
 [build.environment]
-  NODE_VERSION = "18"
-  NPM_VERSION = "9"
   NODE_ENV = "production"
   REACT_APP_API_URL = "/.netlify/functions/server/api"
-  CI = "false"
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["express", "mongoose"]
-  included_files = ["server/functions/**/*"]
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/server/:splat"
+  from = "/.netlify/functions/server/api/*"
+  to = "/.netlify/functions/server"
   status = 200
 
 [[redirects]]

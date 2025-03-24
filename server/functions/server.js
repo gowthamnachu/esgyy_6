@@ -3,6 +3,7 @@ const serverless = require('serverless-http');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 
@@ -12,7 +13,10 @@ app.use(express.json());
 
 // Configure multer for serverless
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
 
 // MongoDB connection
 let cachedDb = null;
@@ -118,12 +122,39 @@ app.post('/.netlify/functions/server/api/memories', upload.array('images'), asyn
   try {
     await connectToDatabase();
     const { title, description, date, sender } = req.body;
-    const images = req.files ? req.files.map(file => file.filename) : [];
-    const memory = new Memory({ title, description, date, sender, images });
+    
+    // Handle file uploads to /tmp directory
+    const images = [];
+    if (req.files) {
+      for (const file of req.files) {
+        const filename = `${Date.now()}-${file.originalname}`;
+        const filepath = `/tmp/${filename}`;
+        fs.writeFileSync(filepath, file.buffer);
+        images.push(filename);
+      }
+    }
+
+    const memory = new Memory({
+      title,
+      description,
+      date,
+      sender,
+      images
+    });
     await memory.save();
     return res.json(memory);
   } catch (error) {
     return res.status(500).json({ error: error.message });
+  }
+});
+
+// Add endpoint to serve files
+app.get('/.netlify/functions/server/api/uploads/:filename', (req, res) => {
+  const filepath = `/tmp/${req.params.filename}`;
+  if (fs.existsSync(filepath)) {
+    res.sendFile(filepath);
+  } else {
+    res.status(404).send('File not found');
   }
 });
 
