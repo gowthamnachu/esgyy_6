@@ -32,10 +32,11 @@
     "ws": "^8.18.1"
   },
   "scripts": {
-    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "start": "node server/server.js",
+    "dev": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
     "start:frontend": "react-scripts start",
     "start:backend": "node server/server.js",
-    "build": "CI=false react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "render-build": "CI=false npm install && CI=false npm run build"

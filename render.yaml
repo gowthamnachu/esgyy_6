@@ -2,18 +2,18 @@ services:
   - type: web
     name: esgyy
     env: node
-    buildCommand: |
-      npm install --force
-      npm install -g react-scripts
-      npm run build
+    buildCommand: npm install && npm run build && cd server && npm install
     startCommand: node server/server.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
-        sync: false
+        value: mongodb+srv://gowthamnachu545:gowtham123@esgyy.baheh.mongodb.net/loveapp
       - key: PORT
         value: 10000
       - key: CI
-        value: false
-    staticPublishPath: ./build
+        value: "false"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
