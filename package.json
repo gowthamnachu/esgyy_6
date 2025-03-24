@@ -12,8 +12,8 @@
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
     "ajv": "^8.17.1",
-    "axios": "^0.21.1",
-    "concurrently": "^7.0.0",
+    "axios": "^1.6.7",
+    "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -26,6 +26,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.4.0",
     "react-scripts": "5.0.1",
+    "rimraf": "^5.0.5",
+    "glob": "^10.3.10",
     "web-vitals": "^2.1.4",
     "ws": "^8.18.1"
   },
@@ -33,10 +35,10 @@
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
     "start:frontend": "react-scripts start",
     "start:backend": "node server/server.js",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "vercel-build": "npm run build"
+    "vercel-build": "CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [

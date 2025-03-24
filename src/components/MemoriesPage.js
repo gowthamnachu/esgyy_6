@@ -6,11 +6,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import ArrowBackIcon from '@mui/icons-material.ArrowBack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Fixed import path
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronRightIcon from '@mui/icons-material.ChevronRight';
 
 const MemoryCard = styled(Card)(({ sender }) => ({
   height: '100%',
