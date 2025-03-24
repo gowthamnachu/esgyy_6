@@ -14,9 +14,7 @@ const app = express();
 
 // Update CORS configuration for Render
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://esgyy.onrender.com' 
-    : 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -45,9 +43,7 @@ mongoose.connect(MONGODB_URI, {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    const uploadDir = process.env.NODE_ENV === 'production' 
-      ? '/tmp'
-      : path.join(__dirname, '../uploads');
+    const uploadDir = process.env.UPLOAD_PATH || path.join(__dirname, '../uploads');
     cb(null, uploadDir);
   },
   filename: function(req, file, cb) {
