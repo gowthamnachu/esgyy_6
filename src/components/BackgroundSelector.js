@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, IconButton, Menu, MenuItem, Typography, Button } from '@mui/material';
+import { IconButton, Menu, MenuItem, Typography, Button } from '@mui/material';
 import { styled } from '@mui/material';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import background1 from '../assets/background1.jpg';
