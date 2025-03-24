@@ -160,10 +160,7 @@ const MessagesPage = () => {
 
   const fetchMessages = useCallback(async () => {
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsURL = API_URL.replace(/^https?:\/\//, wsProtocol + '//');
-      const response = await fetch(`${API_URL}/messages`);
+      const response = await fetch('http://localhost:5000/api/messages');
       if (response.ok) {
         const data = await response.json();
         const hasNewMessages = data.some(msg => 
@@ -195,8 +192,7 @@ const MessagesPage = () => {
     if (!newMessage.trim()) return;
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_URL}/messages`, {
+      const response = await fetch('http://localhost:5000/api/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -218,8 +214,7 @@ const MessagesPage = () => {
 
   const handleDeleteMessage = async (messageId) => {
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_URL}/messages/${messageId}`, {
+      const response = await fetch(`http://localhost:5000/api/messages/${messageId}`, {
         method: 'DELETE',
       });
 
@@ -233,8 +228,7 @@ const MessagesPage = () => {
 
   const handleMarkAsSeen = async (messageId) => {
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      await fetch(`${API_URL}/messages/seen/${messageId}`, {
+      await fetch(`http://localhost:5000/api/messages/seen/${messageId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -282,8 +282,7 @@ const Home = () => {
 
   const fetchBackgrounds = useCallback(async () => {
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_URL}/backgrounds`);
+      const response = await fetch('http://localhost:5000/api/backgrounds');
       if (response.ok) {
         const data = await response.json();
         const allBackgrounds = [
@@ -293,7 +292,7 @@ const Home = () => {
             id: bg._id,
             type: bg.backgroundType,
             url: bg.backgroundType === 'custom' 
-              ? `${API_URL}/uploads/${bg.backgroundValue}`
+              ? `http://localhost:5000/uploads/${bg.backgroundValue}`
               : bg.backgroundValue
           }))
         ];
@@ -330,8 +329,7 @@ const Home = () => {
     const fetchBackgrounds = async () => {
       try {
         // Remove user-specific fetch
-        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_URL}/backgrounds`);
+        const response = await fetch('http://localhost:5000/api/backgrounds');
         if (response.ok) {
           const data = await response.json();
           // Combine preset and custom backgrounds
@@ -342,7 +340,7 @@ const Home = () => {
               id: bg._id,
               type: bg.backgroundType,
               url: bg.backgroundType === 'custom' 
-                ? `${API_URL}/uploads/${bg.backgroundValue}`
+                ? `http://localhost:5000/uploads/${bg.backgroundValue}`
                 : bg.backgroundValue
             }))
           ];

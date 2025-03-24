@@ -41,10 +41,7 @@ const BackgroundPage = () => {
     fetchBackgrounds();
 
     // Initialize WebSocket connection
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsURL = API_URL.replace(/^https?:\/\//, wsProtocol + '//');
-    ws.current = new WebSocket(wsURL);
+    ws.current = new WebSocket('ws://localhost:5000');
 
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -62,8 +59,7 @@ const BackgroundPage = () => {
 
   const fetchBackgrounds = async () => {
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_URL}/backgrounds`);
+      const response = await fetch('http://localhost:5000/api/backgrounds');
       if (response.ok) {
         const data = await response.json();
         const allBackgrounds = [
@@ -73,7 +69,7 @@ const BackgroundPage = () => {
             .map(bg => ({
               id: bg._id,
               type: 'custom',
-              url: `${API_URL}/uploads/${bg.backgroundValue}`
+              url: `http://localhost:5000/uploads/${bg.backgroundValue}`
             }))
         ];
         setBackgrounds(allBackgrounds);
@@ -93,7 +89,7 @@ const BackgroundPage = () => {
     formData.append('backgroundType', 'custom');
 
     try {
-      const response = await fetch(`${API_URL}/background`, {
+      const response = await fetch('http://localhost:5000/api/background', {
         method: 'POST',
         body: formData
       });
@@ -108,7 +104,7 @@ const BackgroundPage = () => {
 
   const handleDelete = async (backgroundId) => {
     try {
-      const response = await fetch(`${API_URL}/background/${backgroundId}`, {
+      const response = await fetch(`http://localhost:5000/api/background/${backgroundId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
