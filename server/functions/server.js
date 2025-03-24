@@ -39,7 +39,7 @@ const Memory = mongoose.model('Memory', {
 });
 
 // Basic routes without file handling
-app.get('/.netlify/functions/server/api/backgrounds', async (req, res) => {
+app.get('/api/backgrounds', async (req, res) => {
   try {
     const backgrounds = await Background.find().sort({ createdAt: -1 });
     res.json(backgrounds);
@@ -48,7 +48,7 @@ app.get('/.netlify/functions/server/api/backgrounds', async (req, res) => {
   }
 });
 
-app.get('/.netlify/functions/server/api/messages', async (req, res) => {
+app.get('/api/messages', async (req, res) => {
   try {
     const messages = await Message.find().sort({ createdAt: -1 });
     res.json(messages);
@@ -58,7 +58,7 @@ app.get('/.netlify/functions/server/api/messages', async (req, res) => {
 });
 
 // Health check
-app.get('/.netlify/functions/server/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running' });
 });
 
