@@ -34,12 +34,6 @@ async function connectToDatabase() {
 }
 
 // Schemas
-const Background = mongoose.model('Background', {
-  backgroundType: String,
-  backgroundValue: String,
-  createdAt: { type: Date, default: Date.now }
-});
-
 const Message = mongoose.model('Message', {
   sender: String,
   content: String,
@@ -65,6 +59,18 @@ const Memory = mongoose.model('Memory', memorySchema);
 // Add S3-like storage URL
 const STORAGE_URL = 'https://esgyyy.netlify.app/.netlify/functions/server/uploads';
 
+// Update Background Schema to store image data
+const backgroundSchema = new mongoose.Schema({
+  backgroundType: String,
+  backgroundValue: {
+    data: String, // base64 string
+    contentType: String
+  },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Background = mongoose.model('Background', backgroundSchema);
+
 // Background Routes
 app.get('/.netlify/functions/server/api/background', async (req, res) => {
   try {
@@ -78,17 +84,37 @@ app.get('/.netlify/functions/server/api/background', async (req, res) => {
   }
 });
 
+// Update background upload route
 app.post('/.netlify/functions/server/api/background', upload.single('backgroundImage'), async (req, res) => {
   try {
     await connectToDatabase();
-    const { backgroundType, backgroundValue } = req.body;
+    const { backgroundType } = req.body;
+    let backgroundValue;
+
+    if (req.file) {
+      // For custom uploaded images, store as base64
+      const base64Data = req.file.buffer.toString('base64');
+      backgroundValue = {
+        data: `data:${req.file.mimetype};base64,${base64Data}`,
+        contentType: req.file.mimetype
+      };
+    } else {
+      // For preset backgrounds, store the URL directly
+      backgroundValue = {
+        data: req.body.backgroundValue,
+        contentType: 'image/jpeg'
+      };
+    }
+
     const background = new Background({
       backgroundType,
-      backgroundValue: req.file ? req.file.filename : backgroundValue
+      backgroundValue
     });
+    
     await background.save();
     return res.json(background);
   } catch (error) {
+    console.error('Error saving background:', error);
     return res.status(500).json({ error: error.message });
   }
 });

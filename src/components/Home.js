@@ -282,18 +282,16 @@ const Home = () => {
 
   const fetchBackgrounds = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/backgrounds');
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/backgrounds`);
       if (response.ok) {
         const data = await response.json();
         const allBackgrounds = [
           { id: 'preset1', type: 'preset', url: background1 },
           { id: 'preset2', type: 'preset', url: background2 },
-          ...data.filter(bg => bg.backgroundValue).map(bg => ({
+          ...data.map(bg => ({
             id: bg._id,
             type: bg.backgroundType,
-            url: bg.backgroundType === 'custom' 
-              ? `http://localhost:5000/uploads/${bg.backgroundValue}`
-              : bg.backgroundValue
+            url: bg.backgroundValue.data
           }))
         ];
         setBackgrounds(allBackgrounds);
