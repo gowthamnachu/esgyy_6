@@ -14,17 +14,23 @@ const app = express();
 
 // Update CORS configuration for Render
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://esgyy6-3fagm6ngc-gowthamnachus-projects.vercel.app'
-    : 'http://localhost:3000',
+  origin: ['https://esgyy6-3fagm6ngc-gowthamnachus-projects.vercel.app', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Update file paths for Vercel
+const uploadDir = process.env.NODE_ENV === 'production' 
+  ? '/tmp'
+  : path.join(process.cwd(), 'uploads');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+app.use('/uploads', express.static(uploadDir));
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
@@ -45,9 +51,6 @@ mongoose.connect(MONGODB_URI, {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    const uploadDir = process.env.NODE_ENV === 'production' 
-      ? '/tmp'
-      : path.join(__dirname, '../uploads');
     cb(null, uploadDir);
   },
   filename: function(req, file, cb) {
