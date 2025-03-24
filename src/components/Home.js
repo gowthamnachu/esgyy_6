@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Box, Typography, Paper, IconButton } from "@mui/material";
 import { styled } from "@mui/material";
 import { keyframes } from "@mui/material";
@@ -10,11 +10,9 @@ import background1 from '../assets/background1.jpg';
 import background2 from '../assets/background.jpg';
 import Sidebar from './Sidebar.js';
 import Confetti from 'react-confetti';
-import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+
 import CakeRoundedIcon from '@mui/icons-material/CakeRounded';
-import BalloonIcon from '@mui/icons-material/CelebrationRounded';
-import GiftIcon from '@mui/icons-material/CardGiftcard';
-import StarIcon from '@mui/icons-material/Star';
+
 
 // Pulse Animation for Heart Icon
 const pulse = keyframes`
@@ -175,19 +173,6 @@ const BirthdayMessage = styled(Typography)(({ theme }) => ({
   filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
 }));
 
-const BirthdaySubMessage = styled(Typography)(({ theme }) => ({
-  color: '#ff80ab',
-  textShadow: '0 0 5px rgba(255,255,255,0.8)',
-  fontFamily: '"Dancing Script", cursive',
-  fontSize: '1.5rem',
-  animation: `${float} 3s infinite ease-in-out`,
-  '&:hover': {
-    transform: 'scale(1.1)',
-    color: '#ff4081'
-  },
-  transition: 'all 0.3s ease'
-}));
-
 const Header = styled(Box)(({ show }) => ({
   position: 'fixed',
   top: 0,
@@ -212,19 +197,6 @@ const floatAnimation = keyframes`
   50% { transform: translateY(-15px); }
   100% { transform: translateY(0px); }
 `;
-
-const BirthdayInfo = styled(Typography)({
-  color: '#ff4081',
-  fontSize: '15px',
-  fontWeight: '500',
-  marginBottom: '5px',
-  animation: `${floatAnimation} 3s infinite ease-in-out`,
-  '&:hover': {
-    transform: 'scale(1.05)',
-    color: '#ff1744'
-  },
-  transition: 'all 0.3s ease'
-});
 
 const WebsiteTitle = styled(Typography)(({ theme }) => ({
   color: 'transparent',
@@ -256,23 +228,6 @@ const HeaderTimerBox = styled(Box)(({ theme }) => ({
   '&:hover': {
     transform: 'translateY(-2px)',
     boxShadow: '0 6px 20px rgba(255, 105, 180, 0.2)'
-  },
-  transition: 'all 0.3s ease'
-}));
-
-const TimerUnit = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #ff4081, #ff80ab)',
-  padding: '5px 10px',
-  borderRadius: '8px',
-  minWidth: '60px',
-  color: 'white',
-  textAlign: 'center',
-  fontSize: '14px',
-  fontWeight: '600',
-  boxShadow: '0 4px 15px rgba(255, 105, 180, 0.2)',
-  '&:hover': {
-    transform: 'scale(1.05)',
-    boxShadow: '0 6px 20px rgba(255, 105, 180, 0.3)'
   },
   transition: 'all 0.3s ease'
 }));
@@ -388,12 +343,12 @@ const Home = () => {
   
   const startDate = moment("2024-09-06 18:15:00"); // Move this here
   
-  const birthdays = {
+  const birthdays = useMemo(() => ({
     gow: { date: '2005-04-05', name: 'Gow' },
     snig: { date: '2006-03-24', name: 'Snig' }
-  };
+  }), []);
 
-  const fetchBackgrounds = async () => {
+  const fetchBackgrounds = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:5000/api/backgrounds');
       if (response.ok) {
@@ -425,7 +380,7 @@ const Home = () => {
         { id: 'preset2', type: 'preset', url: background2 }
       ]);
     }
-  };
+  }, [currentSlideIndex]);
 
   useEffect(() => {
     if (backgrounds.length > 0) {
@@ -559,9 +514,9 @@ const Home = () => {
 
   const username = localStorage.getItem("user");
 
-  const handleBackgroundChange = (newBackground) => {
+  const handleBackgroundChange = useCallback((newBackground) => {
     setBackground(newBackground);
-  };
+  }, []);
 
   // Update background image selection
   const currentBackground = backgrounds[currentSlideIndex];
