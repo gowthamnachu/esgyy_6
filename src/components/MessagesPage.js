@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, TextField, IconButton, Typography, Paper, Button, Snackbar, Alert, Badge } from '@mui/material';
+import { Box, TextField, IconButton, Typography, Paper, Button, Snackbar, Alert } from '@mui/material';
 import { styled } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -162,7 +162,7 @@ const MessagesPage = () => {
     fetchMessages();
     const interval = setInterval(fetchMessages, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchMessages]);
 
   useEffect(scrollToBottom, [messages]);
 

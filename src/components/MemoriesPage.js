@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Card, CardContent, IconButton,
   Dialog, DialogTitle, DialogContent, TextField, Button,
-  Grid, Fade, ImageList, ImageListItem
+  Grid, Fade
 } from '@mui/material';
 import { styled } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from '@mui/icons-material.ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';

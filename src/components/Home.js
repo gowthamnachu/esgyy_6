@@ -450,7 +450,7 @@ const Home = () => {
 
     window.addEventListener('backgroundsUpdated', handleBackgroundUpdate);
     return () => window.removeEventListener('backgroundsUpdated', handleBackgroundUpdate);
-  }, []);
+  }, [fetchBackgrounds]);
 
   // Update fetchBackgrounds function
   const fetchBackgrounds = async () => {
@@ -556,7 +556,7 @@ const Home = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [birthdays, startDate]);
 
   const username = localStorage.getItem("user");
 
