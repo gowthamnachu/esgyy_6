@@ -47,14 +47,20 @@ const Message = mongoose.model('Message', {
   seenBy: [String]
 });
 
-const Memory = mongoose.model('Memory', {
+// Update Memory Schema to store image data
+const memorySchema = new mongoose.Schema({
   title: String,
   description: String,
   date: Date,
-  images: [String],
+  images: [{
+    data: String, // base64 string
+    contentType: String
+  }],
   sender: String,
   createdAt: { type: Date, default: Date.now }
 });
+
+const Memory = mongoose.model('Memory', memorySchema);
 
 // Add S3-like storage URL
 const STORAGE_URL = 'https://esgyyy.netlify.app/.netlify/functions/server/uploads';
@@ -121,19 +127,20 @@ app.get('/.netlify/functions/server/api/memories', async (req, res) => {
   }
 });
 
+// Update memory creation route
 app.post('/.netlify/functions/server/api/memories', upload.array('images'), async (req, res) => {
   try {
     await connectToDatabase();
     const { title, description, date, sender } = req.body;
     
-    // Handle file uploads to /tmp directory
     const images = [];
     if (req.files) {
       for (const file of req.files) {
-        const filename = `${Date.now()}-${file.originalname}`;
-        const filepath = `/tmp/${filename}`;
-        fs.writeFileSync(filepath, file.buffer);
-        images.push(filename);
+        const base64Data = file.buffer.toString('base64');
+        images.push({
+          data: `data:${file.mimetype};base64,${base64Data}`,
+          contentType: file.mimetype
+        });
       }
     }
 
@@ -178,20 +185,7 @@ app.delete('/.netlify/functions/server/api/background/:backgroundId', async (req
   }
 });
 
-// Update file serving route
-app.get('/.netlify/functions/server/uploads/:filename', (req, res) => {
-  try {
-    // Return file from /tmp directory
-    const filePath = `/tmp/${req.params.filename}`;
-    if (fs.existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      res.status(404).json({ error: 'File not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Remove file serving route as it's no longer needed
 
 // Health check route
 app.get('/.netlify/functions/server/health', (req, res) => {
