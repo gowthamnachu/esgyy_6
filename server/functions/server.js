@@ -56,6 +56,9 @@ const Memory = mongoose.model('Memory', {
   createdAt: { type: Date, default: Date.now }
 });
 
+// Add S3-like storage URL
+const STORAGE_URL = 'https://esgyyy.netlify.app/.netlify/functions/server/uploads';
+
 // Background Routes
 app.get('/.netlify/functions/server/api/background', async (req, res) => {
   try {
@@ -148,13 +151,45 @@ app.post('/.netlify/functions/server/api/memories', upload.array('images'), asyn
   }
 });
 
-// Add endpoint to serve files
-app.get('/.netlify/functions/server/api/uploads/:filename', (req, res) => {
-  const filepath = `/tmp/${req.params.filename}`;
-  if (fs.existsSync(filepath)) {
-    res.sendFile(filepath);
-  } else {
-    res.status(404).send('File not found');
+// Delete routes
+app.delete('/.netlify/functions/server/api/memories/:memoryId', async (req, res) => {
+  try {
+    await connectToDatabase();
+    const memory = await Memory.findByIdAndDelete(req.params.memoryId);
+    if (!memory) {
+      return res.status(404).json({ error: 'Memory not found' });
+    }
+    return res.json({ message: 'Memory deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/.netlify/functions/server/api/background/:backgroundId', async (req, res) => {
+  try {
+    await connectToDatabase();
+    const background = await Background.findByIdAndDelete(req.params.backgroundId);
+    if (!background) {
+      return res.status(404).json({ error: 'Background not found' });
+    }
+    return res.json({ message: 'Background deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Update file serving route
+app.get('/.netlify/functions/server/uploads/:filename', (req, res) => {
+  try {
+    // Return file from /tmp directory
+    const filePath = `/tmp/${req.params.filename}`;
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ error: 'File not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

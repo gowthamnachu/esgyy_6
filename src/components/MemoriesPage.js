@@ -187,13 +187,9 @@ const MemoriesPage = () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/memories/${memoryId}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
       });
 
       if (response.ok) {
-        // Update the local state immediately after successful deletion
         setMemories(prevMemories => prevMemories.filter(memory => memory._id !== memoryId));
       } else {
         console.error('Failed to delete memory:', await response.text());
@@ -212,6 +208,11 @@ const MemoriesPage = () => {
         : (currentIndex - 1 + imagesLength) % imagesLength;
       return { ...prev, [memoryId]: newIndex };
     });
+  };
+
+  const getImageUrl = (filename) => {
+    if (!filename) return '';
+    return `${process.env.REACT_APP_API_URL}/uploads/${filename}`;
   };
 
   return (
@@ -233,8 +234,12 @@ const MemoriesPage = () => {
                 <StyledCardMedia>
                   <Box
                     component="img"
-                    src={`http://localhost:5000/uploads/${memory.images[currentImageIndexes[memory._id] || 0]}`}
+                    src={getImageUrl(memory.images[currentImageIndexes[memory._id] || 0])}
                     alt={memory.title}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEgMTl2LTE0aC0xOHYxNGgydjJoMTZ2LTJoLTE4di0xMmgxNnYxMmgtMnoiLz48L3N2Zz4=';
+                    }}
                     sx={{
                       width: '100%',
                       height: '100%',
