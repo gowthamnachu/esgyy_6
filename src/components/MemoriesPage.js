@@ -210,6 +210,11 @@ const MemoriesPage = () => {
     });
   };
 
+  const getImageData = (memory, index) => {
+    const image = memory.images[index];
+    return image?.data || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEgMTl2LTE0aC0xOHYxNGgydjJoMTZ2LTJoLTE4di0xMmgxNnYxMmgtMnoiLz48L3N2Zz4=';
+  };
+
   return (
     <Box sx={{ p: 4, background: 'linear-gradient(45deg, #FFE5EC 0%, #FFF0F5 100%)', minHeight: '100vh' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -229,7 +234,7 @@ const MemoriesPage = () => {
                 <StyledCardMedia>
                   <Box
                     component="img"
-                    src={memory.images[currentImageIndexes[memory._id] || 0]?.data || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEgMTl2LTE0aC0xOHYxNGgydjJoMTZ2LTJoLTE4di0xMmgxNnYxMmgtMnoiLz48L3N2Zz4='}
+                    src={getImageData(memory, currentImageIndexes[memory._id] || 0)}
                     alt={memory.title}
                     onError={(e) => {
                       e.target.onerror = null;

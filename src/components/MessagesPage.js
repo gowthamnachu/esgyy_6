@@ -216,10 +216,16 @@ const MessagesPage = () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/messages/${messageId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
-        setMessages(messages.filter(msg => msg._id !== messageId));
+        // Update local state after successful deletion
+        setMessages(prev => prev.filter(msg => msg._id !== messageId));
+      } else {
+        console.error('Failed to delete message:', await response.text());
       }
     } catch (error) {
       console.error('Error deleting message:', error);

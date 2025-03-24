@@ -185,6 +185,20 @@ app.delete('/.netlify/functions/server/api/background/:backgroundId', async (req
   }
 });
 
+// Update message deletion route
+app.delete('/.netlify/functions/server/api/messages/:messageId', async (req, res) => {
+  try {
+    await connectToDatabase();
+    const message = await Message.findByIdAndDelete(req.params.messageId);
+    if (!message) {
+      return res.status(404).json({ error: 'Message not found' });
+    }
+    return res.json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // Remove file serving route as it's no longer needed
 
 // Health check route
