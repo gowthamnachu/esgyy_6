@@ -16,7 +16,10 @@ const app = express();
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://your-vercel-app-name.vercel.app' 
-    : 'http://localhost:3000'
+    : 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
@@ -243,6 +246,11 @@ app.delete('/api/memories/:memoryId', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Add health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'Server is running' });
 });
 
 const PORT = process.env.PORT || 5000;
